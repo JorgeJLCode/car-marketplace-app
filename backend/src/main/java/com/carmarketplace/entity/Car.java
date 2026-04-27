@@ -24,7 +24,7 @@ public class Car {
     private String make;
     @Column(nullable = false)
     private String model;
-    @Column(nullable = false)
+    @Column(name = "manufacture_year", nullable = false)
     private Integer year;
     @Column(nullable = false)
     private Double price;
