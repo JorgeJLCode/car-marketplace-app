@@ -20,9 +20,13 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String make;
+    @Column(nullable = false)
     private String model;
+    @Column(nullable = false)
     private Integer year;
+    @Column(nullable = false)
     private Double price;
     private Integer mileage;
     private String fuelType;

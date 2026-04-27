@@ -4,6 +4,7 @@ import com.carmarketplace.dto.CarDto;
 import com.carmarketplace.dto.CarFilterParams;
 import com.carmarketplace.entity.Car;
 import com.carmarketplace.service.CarService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -59,13 +60,13 @@ public class CarController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Car> createCar(@RequestBody CarDto dto) {
+    public ResponseEntity<Car> createCar(@Valid @RequestBody CarDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(carService.createCar(dto));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Car> updateCar(@PathVariable Long id, @RequestBody CarDto dto) {
+    public ResponseEntity<Car> updateCar(@PathVariable Long id, @Valid @RequestBody CarDto dto) {
         return ResponseEntity.ok(carService.updateCar(id, dto));
     }
 
