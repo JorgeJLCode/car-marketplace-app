@@ -4,7 +4,6 @@ import com.carsales.car_sales.dto.CarFilterDto;
 import com.carsales.car_sales.dto.CarRequestDto;
 import com.carsales.car_sales.dto.CarResponseDto;
 import com.carsales.car_sales.service.CarService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -23,7 +22,8 @@ public class CarController {
 
     private final CarService carService;
 
-    // GET /api/cars?q=bmw&brand=BMW&minPrice=10000&maxPrice=50000&minYear=2018&maxYear=2023&page=0&size=10&sort=price,asc
+    // GET
+    // /api/cars?q=bmw&brand=BMW&minPrice=10000&maxPrice=50000&minYear=2018&maxYear=2023&page=0&size=10&sort=price,asc
     @GetMapping
     public ResponseEntity<Page<CarResponseDto>> getAll(
             @ParameterObject CarFilterDto filter,
@@ -31,42 +31,30 @@ public class CarController {
         return ResponseEntity.ok(carService.findAll(filter, pageable));
     }
 
-    // GET /api/cars/{id}  → Público
+    // GET /api/cars/{id} → Público
     @GetMapping("/{id}")
     public ResponseEntity<CarResponseDto> getById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(carService.findById(id));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(carService.findById(id));
     }
 
-    // POST /api/cars  → Solo ADMIN
+    // POST /api/cars → Solo ADMIN
     @PostMapping
     public ResponseEntity<CarResponseDto> create(@Valid @RequestBody CarRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(carService.create(request));
     }
 
-    // PUT /api/cars/{id}  → Solo ADMIN
+    // PUT /api/cars/{id} → Solo ADMIN
     @PutMapping("/{id}")
     public ResponseEntity<CarResponseDto> update(
             @PathVariable Long id,
             @Valid @RequestBody CarRequestDto request) {
-        try {
-            return ResponseEntity.ok(carService.update(id, request));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(carService.update(id, request));
     }
 
-    // DELETE /api/cars/{id}  → Solo ADMIN
+    // DELETE /api/cars/{id} → Solo ADMIN
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        try {
-            carService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        carService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

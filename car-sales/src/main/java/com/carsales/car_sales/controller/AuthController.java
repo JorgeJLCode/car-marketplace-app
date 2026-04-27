@@ -21,19 +21,11 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody RegisterRequestDto request) {
-        try {
-            return ResponseEntity.ok(authService.register(request));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new AuthResponseDto(null, e.getMessage()));
-        }
+        return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
-        try {
-            return ResponseEntity.ok(authService.login(request));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(new AuthResponseDto(null, "Credenciales incorrectas"));
-        }
+        return ResponseEntity.ok(authService.login(request));
     }
 }
