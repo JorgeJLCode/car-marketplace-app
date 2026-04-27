@@ -13,7 +13,7 @@ public class CarDto {
     @NotBlank
     private String model;
     @Min(1886)
-    @Max(2100)
+    @Max(2027)
     private Integer year;
     @Positive
     private Double price;

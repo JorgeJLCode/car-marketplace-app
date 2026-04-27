@@ -67,13 +67,13 @@ export default function CarListing() {
   const [totalPages, setTotalPages] = useState(0)
   const [totalElements, setTotalElements] = useState(0)
   const { isAuthenticated } = useAuth()
-  const PAGE_SIZE = 12
+  const pageSize = 12
 
   const fetchCars = useCallback(async (activeFilters, activePage) => {
     setLoading(true)
     setError('')
     try {
-      const params = { page: activePage, size: PAGE_SIZE, ...activeFilters }
+      const params = { page: activePage, size: pageSize, ...activeFilters }
       const { data } = await api.get('/cars', { params })
       if (data.content !== undefined) {
         setCars(data.content)

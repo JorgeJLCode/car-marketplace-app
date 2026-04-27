@@ -243,13 +243,13 @@ export default function AdminPanel() {
   const [successMsg, setSuccessMsg] = useState('')
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
-  const PAGE_SIZE = 20
+  const pageSize = 20
 
   const fetchCars = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
-      const { data } = await api.get('/cars', { params: { page, size: PAGE_SIZE } })
+      const { data } = await api.get('/cars', { params: { page, size: pageSize } })
       if (data.content !== undefined) {
         setCars(data.content)
         setTotalPages(data.totalPages)
