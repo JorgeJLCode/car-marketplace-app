@@ -34,11 +34,7 @@ public class CarController {
     // GET /api/cars/{id}  → Público
     @GetMapping("/{id}")
     public ResponseEntity<CarResponseDto> getById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(carService.findById(id));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(carService.findById(id));
     }
 
     // POST /api/cars  → Solo ADMIN
@@ -52,21 +48,13 @@ public class CarController {
     public ResponseEntity<CarResponseDto> update(
             @PathVariable Long id,
             @Valid @RequestBody CarRequestDto request) {
-        try {
-            return ResponseEntity.ok(carService.update(id, request));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(carService.update(id, request));
     }
 
     // DELETE /api/cars/{id}  → Solo ADMIN
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        try {
-            carService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        carService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
