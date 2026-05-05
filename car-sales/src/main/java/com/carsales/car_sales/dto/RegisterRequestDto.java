@@ -11,10 +11,10 @@ public class RegisterRequestDto {
     private String name;
 
     @NotBlank(message = "El email es obligatorio")
-    @Email(message = "Email inválido")
+    @Email(message = "Email inválido") // Validación de formato estándar de email (xxx@yyy.zzz)
     private String email;
 
     @NotBlank(message = "La contraseña es obligatoria")
-    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
+    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres") // Seguridad básica
     private String password;
 }

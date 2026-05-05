@@ -14,6 +14,22 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Validación básica Frontend (evita llamadas inútiles al servidor)
+    if (!name || !email || !password) {
+      setError('Por favor, rellena todos los campos.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Por favor, introduce un email válido.');
+      return;
+    }
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
     setLoading(true);
     try {
       await register(name, email, password);

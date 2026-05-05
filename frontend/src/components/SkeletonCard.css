@@ -1,0 +1,64 @@
+.skeleton-card {
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* Animación de pulso continuo */
+@keyframes skeleton-pulse {
+  0% {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.skeleton-image {
+  width: 100%;
+  padding-top: 60%;
+  animation: skeleton-pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-content {
+  gap: 12px;
+}
+
+.skeleton-line {
+  height: 20px;
+  border-radius: 4px;
+  animation: skeleton-pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 24px;
+}
+
+.skeleton-subtitle {
+  width: 30%;
+  margin-bottom: 8px;
+}
+
+.skeleton-details {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.skeleton-icon-text {
+  height: 16px;
+  width: 80px;
+  border-radius: 4px;
+  animation: skeleton-pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-button {
+  height: 44px;
+  border-radius: 8px;
+  margin-top: auto;
+  animation: skeleton-pulse 1.5s infinite ease-in-out;
+}

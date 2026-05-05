@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
+import { API_URL } from '../config';
 import './CarDetail.css';
 
 const CarDetail = () => {
@@ -17,7 +18,7 @@ const CarDetail = () => {
   useEffect(() => {
     const fetchCarDetail = async () => {
       try {
-        const response = await fetch(`/api/cars/${id}`);
+        const response = await fetch(`${API_URL}/api/cars/${id}`);
         if (!response.ok) {
           if (response.status === 404) {
             throw new Error('Car not found');
@@ -59,9 +60,17 @@ const CarDetail = () => {
 
   const isFav = isFavorite(car.id);
 
+  const location = useLocation();
+
   const handleFavoriteClick = async () => {
     if (!user) {
-      navigate('/login');
+      /**
+       * REDIRECT CON QUERY PARAM:
+       * Incluimos la URL actual (/cars/:id) en el param "redirect" para que
+       * tras el login, AuthContext devuelva al usuario directamente a este
+       * detalle de coche en lugar de ir al Home.
+       */
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
       return;
     }
     await toggleFavorite(car);
@@ -79,29 +88,27 @@ const CarDetail = () => {
       <div className="detail-content">
         <div className="detail-image-section">
           <div className="main-image-container">
-            <img src="/default_car.png" alt={`${car.brand} ${car.model}`} className="detail-main-image" />
-            <div className="detail-price-badge">${car.price.toLocaleString()}</div>
+            <img src={car.imageUrl || car.image || "/default_car.png"} alt={`${car.brand} ${car.model}`} className="detail-main-image" />
+            <div className="detail-price-badge">${car.price?.toLocaleString() || '0'}</div>
             
-            {user && (
-              <button 
-                className={`detail-favorite-btn ${isFav ? 'active' : ''}`} 
-                onClick={handleFavoriteClick}
-                title={isFav ? "Remove from favorites" : "Add to favorites"}
+            <button 
+              className={`detail-favorite-btn ${isFav ? 'active' : ''}`} 
+              onClick={handleFavoriteClick}
+              title={isFav ? "Remove from favorites" : "Add to favorites"}
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="28" height="28" 
+                viewBox="0 0 24 24" 
+                fill={isFav ? "currentColor" : "none"} 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="28" height="28" 
-                  viewBox="0 0 24 24" 
-                  fill={isFav ? "currentColor" : "none"} 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                >
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-              </button>
-            )}
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -109,7 +116,7 @@ const CarDetail = () => {
           <div className="info-header">
             <span className="brand-tag">{car.brand}</span>
             <h1 className="car-title">{car.brand} {car.model}</h1>
-            <p className="car-subtitle">{car.year} • {car.mileage.toLocaleString()} miles</p>
+            <p className="car-subtitle">{car.year} • {car.mileage?.toLocaleString() || '0'} miles</p>
           </div>
 
           <div className="specs-grid">
@@ -119,7 +126,7 @@ const CarDetail = () => {
             </div>
             <div className="spec-item">
               <span className="spec-label">Mileage</span>
-              <span className="spec-value">{car.mileage.toLocaleString()} mi</span>
+              <span className="spec-value">{car.mileage?.toLocaleString() || '0'} mi</span>
             </div>
             <div className="spec-item">
               <span className="spec-label">Condition</span>

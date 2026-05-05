@@ -13,6 +13,18 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Validación básica Frontend
+    if (!email || !password) {
+      setError('Por favor, rellena todos los campos.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Por favor, introduce un email válido.');
+      return;
+    }
+
     setLoading(true);
     try {
       await login(email, password);

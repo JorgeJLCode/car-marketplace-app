@@ -2,6 +2,7 @@ package com.carsales.car_sales.repository;
 
 import com.carsales.car_sales.dto.CarFilterDto;
 import com.carsales.car_sales.entity.Car;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -27,12 +28,13 @@ public class CarSpecification {
                 ));
             }
 
-            // brand= filtro exacto por marca (case-insensitive)
-            if (filter.getBrand() != null && !filter.getBrand().isBlank()) {
-                predicates.add(cb.equal(
-                        cb.lower(root.get("brand")),
-                        filter.getBrand().toLowerCase()
-                ));
+            // brand= filtro por múltiples marcas (case-insensitive)
+            if (filter.getBrand() != null && !filter.getBrand().isEmpty()) {
+                CriteriaBuilder.In<String> inClause = cb.in(cb.lower(root.get("brand")));
+                for (String b : filter.getBrand()) {
+                    inClause.value(b.toLowerCase());
+                }
+                predicates.add(inClause);
             }
 
             // minPrice= / maxPrice= rango de precio

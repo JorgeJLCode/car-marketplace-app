@@ -12,9 +12,9 @@
 }
 
 .car-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-  border-color: rgba(170, 59, 255, 0.5); /* Accent color */
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 15px rgba(170, 59, 255, 0.2);
+  border-color: rgba(170, 59, 255, 0.6);
 }
 
 .car-card-image-container {
@@ -42,14 +42,16 @@
   position: absolute;
   bottom: 12px;
   right: 12px;
-  background: rgba(170, 59, 255, 0.85); /* Accent color */
+  background: rgba(170, 59, 255, 0.95); /* High contrast accent */
   color: white;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 20px;
-  font-weight: 700;
-  font-size: 1.1rem;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 4px 12px rgba(170, 59, 255, 0.3);
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 15px rgba(170, 59, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .favorite-toggle-btn {

@@ -3,6 +3,7 @@ package com.carsales.car_sales.dto;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Parámetros de búsqueda y filtrado para el endpoint GET /api/cars.
@@ -14,8 +15,8 @@ public class CarFilterDto {
     /** Texto libre: busca en marca o modelo (case-insensitive) */
     private String q;
 
-    /** Marca exacta */
-    private String brand;
+    /** Marcas exactas (multi) */
+    private List<String> brand;
 
     /** Precio mínimo */
     private BigDecimal minPrice;

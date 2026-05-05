@@ -1,36 +1,32 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import CarCard from '../components/CarCard';
 import CarFilters from '../components/CarFilters';
+import SkeletonCard from '../components/SkeletonCard';
+import { API_URL } from '../config';
 import './Home.css';
 
 const Home = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [filters, setFilters] = useState({
-    q: '',
-    brand: '',
-    minPrice: '',
-    maxPrice: '',
-    minYear: '',
-    maxYear: ''
-  });
+  /**
+   * UX DECISION: QUERY PARAMS EN LUGAR DE ESTADO INTERNO
+   * Al leer y escribir los filtros directamente en la URL (usando searchParams),
+   * logramos que el usuario pueda:
+   * 1. Refrescar la página sin perder sus filtros.
+   * 2. Copiar y pegar la URL para compartir una búsqueda exacta (ej. /?q=bmw&maxPrice=30000).
+   * 3. Usar los botones de "Atrás/Adelante" del navegador para deshacer/rehacer búsquedas.
+   */
 
   const fetchCars = useCallback(async () => {
     setLoading(true);
     try {
-      // Build query string
-      const params = new URLSearchParams();
-      if (filters.q) params.append('q', filters.q);
-      if (filters.brand) params.append('brand', filters.brand);
-      if (filters.minPrice) params.append('minPrice', filters.minPrice);
-      if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
-      if (filters.minYear) params.append('minYear', filters.minYear);
-      if (filters.maxYear) params.append('maxYear', filters.maxYear);
-
-      const queryString = params.toString();
-      const url = `/api/cars${queryString ? `?${queryString}` : ''}`;
+      // La URL base más los parámetros actuales
+      const queryString = searchParams.toString();
+      const url = `${API_URL}/api/cars${queryString ? `?${queryString}` : ''}`;
 
       const response = await fetch(url);
       if (!response.ok) {
@@ -43,17 +39,27 @@ const Home = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [searchParams]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // Al cambiar la URL, automáticamente lanzamos de nuevo la búsqueda
     fetchCars();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Initial load only, manual apply for subsequent fetches
+  }, [fetchCars]);
 
-  const handleApplyFilters = () => {
-     
-    fetchCars();
+  const handleApplyFilters = (newFilters) => {
+    const params = new URLSearchParams();
+    if (newFilters.q) params.set('q', newFilters.q);
+    if (newFilters.minPrice) params.set('minPrice', newFilters.minPrice);
+    if (newFilters.maxPrice) params.set('maxPrice', newFilters.maxPrice);
+    if (newFilters.minYear) params.set('minYear', newFilters.minYear);
+    if (newFilters.maxYear) params.set('maxYear', newFilters.maxYear);
+    
+    // Brand es ahora un array, por lo que usamos append para enviar múltiples
+    if (newFilters.brand && newFilters.brand.length > 0) {
+      newFilters.brand.forEach(b => params.append('brand', b));
+    }
+    
+    setSearchParams(params);
   };
 
   return (
@@ -67,8 +73,7 @@ const Home = () => {
         <div className="inventory-layout">
           <div className="inventory-sidebar">
             <CarFilters 
-              filters={filters} 
-              setFilters={setFilters} 
+              currentParams={searchParams} 
               onApply={handleApplyFilters} 
             />
           </div>
@@ -80,9 +85,11 @@ const Home = () => {
             </div>
 
             {loading ? (
-              <div className="loading-state">
-                <div className="spinner"></div>
-                <p>Loading premium vehicles...</p>
+              <div className="cars-grid">
+                {/* UX Decision: Mostrar 6 skeletons como placeholder durante la carga */}
+                {[...Array(6)].map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))}
               </div>
             ) : error ? (
               <div className="error-state">
@@ -94,10 +101,7 @@ const Home = () => {
                 <div className="empty-icon" style={{ fontSize: '3rem', marginBottom: '20px' }}>🔍</div>
                 <p>No vehicles match your search criteria.</p>
                 <button 
-                  onClick={() => {
-                    setFilters({q:'', brand:'', minPrice:'', maxPrice:'', minYear:'', maxYear:''});
-                    setTimeout(() => handleApplyFilters(), 0);
-                  }}
+                  onClick={() => setSearchParams(new URLSearchParams())}
                   className="reset-search-btn"
                 >
                   Clear Filters

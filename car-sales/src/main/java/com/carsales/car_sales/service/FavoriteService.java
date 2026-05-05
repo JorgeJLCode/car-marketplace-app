@@ -10,6 +10,7 @@ import com.carsales.car_sales.repository.FavoriteRepository;
 import com.carsales.car_sales.security.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FavoriteService {
@@ -35,6 +37,8 @@ public class FavoriteService {
                 .orElseThrow(() -> new EntityNotFoundException("Coche no encontrado con id: " + carId));
 
         if (favoriteRepository.existsByUserIdAndCarId(currentUser.getId(), carId)) {
+            // LOGGING DECISION [WARN]: Detectar si un usuario bombardea el endpoint para intentar saltarse la validación
+            log.warn("Usuario [{}] intentó añadir a favoritos el vehículo [{}] que ya tenía guardado", currentUser.getEmail(), carId);
             throw new IllegalStateException("Este coche ya está en tus favoritos");
         }
 
@@ -44,6 +48,8 @@ public class FavoriteService {
                 .build();
 
         Favorite saved = favoriteRepository.save(favorite);
+        // LOGGING DECISION [INFO]: Seguimiento normal de interacción del usuario
+        log.info("Usuario [{}] añadió el vehículo [{}] a su lista de favoritos", currentUser.getEmail(), carId);
         return toDto(saved);
     }
 
@@ -54,9 +60,12 @@ public class FavoriteService {
     public void removeFavorite(Long carId, Authentication authentication) {
         User currentUser = extractUser(authentication);
         Favorite favorite = favoriteRepository.findByUserIdAndCarId(currentUser.getId(), carId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "El coche con id " + carId + " no está en tus favoritos"));
+                .orElseThrow(() -> {
+                    log.warn("Usuario [{}] intentó eliminar de favoritos el vehículo [{}] que no estaba guardado", currentUser.getEmail(), carId);
+                    return new EntityNotFoundException("El coche con id " + carId + " no está en tus favoritos");
+                });
         favoriteRepository.delete(favorite);
+        log.info("Usuario [{}] eliminó el vehículo [{}] de su lista de favoritos", currentUser.getEmail(), carId);
     }
 
     /**

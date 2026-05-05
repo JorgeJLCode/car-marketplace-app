@@ -45,3 +45,25 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* ── UX Enhancements: Button Click Feedback ── */
+button, .primary-btn, .action-btn, .car-card-button, .apply-btn, .reset-btn {
+  transition: transform 0.1s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+/* Efecto de "presión" al hacer click en cualquier botón interactivo */
+button:active:not(:disabled), 
+.primary-btn:active:not(:disabled), 
+.action-btn:active:not(:disabled), 
+.car-card-button:active:not(:disabled),
+.apply-btn:active:not(:disabled),
+.reset-btn:active:not(:disabled),
+.favorite-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+button:disabled, .primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}

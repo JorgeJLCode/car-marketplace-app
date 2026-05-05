@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
 import './CarCard.css';
@@ -7,11 +7,18 @@ const CarCard = ({ car }) => {
   const { user } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleFavoriteClick = async (e) => {
-    e.preventDefault(); // Prevent navigating to the car detail page if the card is wrapped in a Link, or just in case
+    e.preventDefault();
     if (!user) {
-      navigate('/login');
+      /**
+       * REDIRECT CON QUERY PARAM:
+       * Guardamos la URL actual en el param "redirect" para que tras
+       * hacer login, AuthContext pueda devolver al usuario a esta misma
+       * página en lugar de ir siempre al Home.
+       */
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
       return;
     }
     await toggleFavorite(car);
@@ -22,29 +29,27 @@ const CarCard = ({ car }) => {
   return (
     <div className="car-card">
       <div className="car-card-image-container">
-        <img src="/default_car.png" alt={`${car.brand} ${car.model}`} className="car-card-image" />
-        <div className="car-card-price">${car.price.toLocaleString()}</div>
+        <img src={car.imageUrl || car.image || "/default_car.png"} alt={`${car.brand} ${car.model}`} className="car-card-image" />
+        <div className="car-card-price">${car.price?.toLocaleString() || '0'}</div>
         
-        {user && (
-          <button 
-            className={`favorite-toggle-btn ${isFav ? 'active' : ''}`} 
-            onClick={handleFavoriteClick}
-            title={isFav ? "Remove from favorites" : "Add to favorites"}
+        <button 
+          className={`favorite-toggle-btn ${isFav ? 'active' : ''}`} 
+          onClick={handleFavoriteClick}
+          title={isFav ? "Remove from favorites" : "Add to favorites"}
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" height="24" 
+            viewBox="0 0 24 24" 
+            fill={isFav ? "currentColor" : "none"} 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="24" height="24" 
-              viewBox="0 0 24 24" 
-              fill={isFav ? "currentColor" : "none"} 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
-          </button>
-        )}
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
       </div>
       <div className="car-card-content">
         <div className="car-card-header">
@@ -54,7 +59,7 @@ const CarCard = ({ car }) => {
         <div className="car-card-details">
           <div className="car-detail-item">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>{car.mileage.toLocaleString()} mi</span>
+            <span>{car.mileage?.toLocaleString() || '0'} mi</span>
           </div>
           <div className="car-detail-item">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>

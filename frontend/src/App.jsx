@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Favorites from './pages/Favorites';
 import AdminPanel from './pages/AdminPanel';
+import AdminCarForm from './pages/AdminCarForm';
 import './App.css';
 
 function App() {
@@ -23,6 +24,8 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin/cars/new" element={<AdminCarForm />} />
+            <Route path="/admin/cars/edit/:id" element={<AdminCarForm />} />
           </Routes>
         </FavoritesProvider>
       </AuthProvider>

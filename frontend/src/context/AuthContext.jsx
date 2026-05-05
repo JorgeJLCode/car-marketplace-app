@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { API_URL } from '../config';
 
 const AuthContext = createContext();
 
@@ -20,29 +21,27 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (token) {
       localStorage.setItem('token', token);
       const decoded = parseJwt(token);
       if (decoded) {
-        // Typically role is stored in "role" or "roles" or "authorities"
         const role = decoded.role || decoded.roles || (decoded.authorities ? decoded.authorities[0] : null) || 'USER';
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setUser({ email: decoded.sub || decoded.email, role: role, authenticated: true });
       } else {
-         
         setUser({ authenticated: true, role: 'USER' });
       }
     } else {
       localStorage.removeItem('token');
-       
       setUser(null);
     }
   }, [token]);
 
   const login = async (email, password) => {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -55,11 +54,24 @@ export const AuthProvider = ({ children }) => {
 
     const data = await response.json();
     setToken(data.token);
-    navigate('/');
+
+    /**
+     * REDIRECT CON QUERY PARAM:
+     * Tras el login, comprobamos si la URL actual tiene un parámetro "redirect".
+     * Este parámetro lo añade el botón ❤️ cuando un usuario no autenticado
+     * intenta marcar un favorito: navega a /login?redirect=/cars/42
+     *
+     * De esta forma, tras autenticarse, el usuario vuelve exactamente
+     * al punto donde estaba, en lugar de ir siempre al Home.
+     * Esto mejora significativamente la experiencia de usuario.
+     */
+    const params = new URLSearchParams(location.search);
+    const redirectTo = params.get('redirect') || '/';
+    navigate(redirectTo);
   };
 
   const register = async (name, email, password) => {
-    const response = await fetch('/api/auth/register', {
+    const response = await fetch(`${API_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password }),
@@ -72,7 +84,11 @@ export const AuthProvider = ({ children }) => {
 
     const data = await response.json();
     setToken(data.token);
-    navigate('/');
+
+    // Mismo comportamiento que login: respetar el redirect param si existe
+    const params = new URLSearchParams(location.search);
+    const redirectTo = params.get('redirect') || '/';
+    navigate(redirectTo);
   };
 
   const logout = () => {

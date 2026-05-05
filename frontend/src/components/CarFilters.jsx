@@ -1,29 +1,69 @@
+import { useState, useEffect } from 'react';
 import './CarFilters.css';
 
-const CarFilters = ({ filters, setFilters, onApply }) => {
+const AVAILABLE_BRANDS = [
+  'Toyota', 'Honda', 'Ford', 'Chevrolet', 'BMW', 'Mercedes-Benz', 'Audi', 'Tesla'
+];
+
+const CarFilters = ({ currentParams, onApply }) => {
+  // Guardamos un estado "borrador" local para que el usuario pueda escribir
+  // y seleccionar sin que la página recargue con cada pulsación de tecla.
+  const [draftFilters, setDraftFilters] = useState({
+    q: '',
+    brand: [],
+    minPrice: '',
+    maxPrice: '',
+    minYear: '',
+    maxYear: ''
+  });
+
+  // Sincronizamos el estado local cuando la URL cambia (ej. al ir Atrás en el navegador)
+  useEffect(() => {
+    setDraftFilters({
+      q: currentParams.get('q') || '',
+      brand: currentParams.getAll('brand') || [],
+      minPrice: currentParams.get('minPrice') || '',
+      maxPrice: currentParams.get('maxPrice') || '',
+      minYear: currentParams.get('minYear') || '',
+      maxYear: currentParams.get('maxYear') || ''
+    });
+  }, [currentParams]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({
+    setDraftFilters(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
+  const handleBrandToggle = (brandName) => {
+    setDraftFilters(prev => {
+      const isSelected = prev.brand.includes(brandName);
+      if (isSelected) {
+        return { ...prev, brand: prev.brand.filter(b => b !== brandName) };
+      } else {
+        return { ...prev, brand: [...prev.brand, brandName] };
+      }
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onApply();
+    onApply(draftFilters);
   };
 
   const handleReset = () => {
-    setFilters({
+    const emptyFilters = {
       q: '',
-      brand: '',
+      brand: [],
       minPrice: '',
       maxPrice: '',
       minYear: '',
       maxYear: ''
-    });
-    // Let the parent know we want to fetch with empty filters immediately, or just let them click apply
+    };
+    setDraftFilters(emptyFilters);
+    onApply(emptyFilters); // Aplicamos vacío de inmediato a la URL
   };
 
   return (
@@ -39,7 +79,7 @@ const CarFilters = ({ filters, setFilters, onApply }) => {
             type="text" 
             id="q" 
             name="q" 
-            value={filters.q} 
+            value={draftFilters.q} 
             onChange={handleChange} 
             placeholder="Model or keyword"
             className="filter-input"
@@ -47,24 +87,19 @@ const CarFilters = ({ filters, setFilters, onApply }) => {
         </div>
 
         <div className="filter-group">
-          <label htmlFor="brand">Brand</label>
-          <select 
-            id="brand" 
-            name="brand" 
-            value={filters.brand} 
-            onChange={handleChange}
-            className="filter-input"
-          >
-            <option value="">All Brands</option>
-            <option value="Toyota">Toyota</option>
-            <option value="Honda">Honda</option>
-            <option value="Ford">Ford</option>
-            <option value="Chevrolet">Chevrolet</option>
-            <option value="BMW">BMW</option>
-            <option value="Mercedes-Benz">Mercedes-Benz</option>
-            <option value="Audi">Audi</option>
-            <option value="Tesla">Tesla</option>
-          </select>
+          <label>Brands (Multi-select)</label>
+          <div className="brand-checkboxes">
+            {AVAILABLE_BRANDS.map(brand => (
+              <label key={brand} className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={draftFilters.brand.includes(brand)}
+                  onChange={() => handleBrandToggle(brand)}
+                />
+                <span className="checkbox-text">{brand}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
         <div className="filter-group">
@@ -73,7 +108,7 @@ const CarFilters = ({ filters, setFilters, onApply }) => {
             <input 
               type="number" 
               name="minPrice" 
-              value={filters.minPrice} 
+              value={draftFilters.minPrice} 
               onChange={handleChange} 
               placeholder="Min $" 
               className="filter-input half"
@@ -82,7 +117,7 @@ const CarFilters = ({ filters, setFilters, onApply }) => {
             <input 
               type="number" 
               name="maxPrice" 
-              value={filters.maxPrice} 
+              value={draftFilters.maxPrice} 
               onChange={handleChange} 
               placeholder="Max $" 
               className="filter-input half"
@@ -96,7 +131,7 @@ const CarFilters = ({ filters, setFilters, onApply }) => {
             <input 
               type="number" 
               name="minYear" 
-              value={filters.minYear} 
+              value={draftFilters.minYear} 
               onChange={handleChange} 
               placeholder="Min" 
               className="filter-input half"
@@ -107,7 +142,7 @@ const CarFilters = ({ filters, setFilters, onApply }) => {
             <input 
               type="number" 
               name="maxYear" 
-              value={filters.maxYear} 
+              value={draftFilters.maxYear} 
               onChange={handleChange} 
               placeholder="Max" 
               className="filter-input half"
