@@ -14,6 +14,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -43,7 +46,7 @@ public class AuthService {
         // LOGGING DECISION [INFO]: Acción normal y esperada, útil para métricas.
         log.info("Nuevo usuario registrado con éxito: [{}]", request.getEmail());
 
-        String jwtToken = jwtTokenProvider.generateToken(new CustomUserDetails(user));
+        String jwtToken = generateAuthToken(user);
         return new AuthResponseDto(jwtToken, "Usuario registrado exitosamente");
     }
 
@@ -64,11 +67,18 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-        String jwtToken = jwtTokenProvider.generateToken(new CustomUserDetails(user));
+        String jwtToken = generateAuthToken(user);
         
         // LOGGING DECISION [INFO]: Trazabilidad de acceso exitoso al sistema.
         log.info("Login exitoso para el usuario [{}]", request.getEmail());
         
         return new AuthResponseDto(jwtToken, "Login exitoso");
+    }
+
+    private String generateAuthToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("name", user.getName());
+        claims.put("role", "ROLE_" + user.getRole().name());
+        return jwtTokenProvider.generateToken(claims, new CustomUserDetails(user));
     }
 }

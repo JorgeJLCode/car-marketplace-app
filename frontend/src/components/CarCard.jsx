@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
+import { getCarImageUrl } from '../utils/carImages';
 import './CarCard.css';
 
 const CarCard = ({ car }) => {
@@ -29,7 +30,7 @@ const CarCard = ({ car }) => {
   return (
     <div className="car-card">
       <div className="car-card-image-container">
-        <img src={car.imageUrl || car.image || "/default_car.png"} alt={`${car.brand} ${car.model}`} className="car-card-image" />
+        <img src={getCarImageUrl(car)} alt={`${car.brand} ${car.model}`} className="car-card-image" />
         <div className="car-card-price">${car.price?.toLocaleString() || '0'}</div>
         
         <button 
@@ -59,7 +60,7 @@ const CarCard = ({ car }) => {
         <div className="car-card-details">
           <div className="car-detail-item">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>{car.mileage?.toLocaleString() || '0'} mi</span>
+            <span>{car.mileage?.toLocaleString() || '0'} km</span>
           </div>
           <div className="car-detail-item">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>

@@ -3,6 +3,7 @@ package com.carsales.car_sales.service;
 import com.carsales.car_sales.dto.AuthResponseDto;
 import com.carsales.car_sales.dto.LoginRequestDto;
 import com.carsales.car_sales.dto.RegisterRequestDto;
+import com.carsales.car_sales.entity.Role;
 import com.carsales.car_sales.entity.User;
 import com.carsales.car_sales.repository.UserRepository;
 import com.carsales.car_sales.security.CustomUserDetails;
@@ -48,7 +49,7 @@ public class AuthServiceTest {
         when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encoded-password");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(jwtTokenProvider.generateToken(any(CustomUserDetails.class))).thenReturn("fake-jwt-token");
+        when(jwtTokenProvider.generateToken(anyMap(), any(CustomUserDetails.class))).thenReturn("fake-jwt-token");
 
         // Act
         AuthResponseDto response = authService.register(request);
@@ -81,11 +82,13 @@ public class AuthServiceTest {
         request.setPassword("password123");
 
         User user = new User();
+        user.setName("Test User");
         user.setEmail(request.getEmail());
         user.setPassword("encoded-password");
+        user.setRole(Role.USER);
 
         when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(user));
-        when(jwtTokenProvider.generateToken(any(CustomUserDetails.class))).thenReturn("fake-jwt-token");
+        when(jwtTokenProvider.generateToken(anyMap(), any(CustomUserDetails.class))).thenReturn("fake-jwt-token");
 
         // Act
         AuthResponseDto response = authService.login(request);

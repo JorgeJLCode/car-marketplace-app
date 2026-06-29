@@ -3,11 +3,13 @@ import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { API_URL } from '../config';
+import { getCarImageUrl } from '../utils/carImages';
 import './CarDetail.css';
 
 const CarDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
   
@@ -60,8 +62,6 @@ const CarDetail = () => {
 
   const isFav = isFavorite(car.id);
 
-  const location = useLocation();
-
   const handleFavoriteClick = async () => {
     if (!user) {
       /**
@@ -88,7 +88,7 @@ const CarDetail = () => {
       <div className="detail-content">
         <div className="detail-image-section">
           <div className="main-image-container">
-            <img src={car.imageUrl || car.image || "/default_car.png"} alt={`${car.brand} ${car.model}`} className="detail-main-image" />
+            <img src={getCarImageUrl(car)} alt={`${car.brand} ${car.model}`} className="detail-main-image" />
             <div className="detail-price-badge">${car.price?.toLocaleString() || '0'}</div>
             
             <button 
@@ -116,7 +116,7 @@ const CarDetail = () => {
           <div className="info-header">
             <span className="brand-tag">{car.brand}</span>
             <h1 className="car-title">{car.brand} {car.model}</h1>
-            <p className="car-subtitle">{car.year} • {car.mileage?.toLocaleString() || '0'} miles</p>
+            <p className="car-subtitle">{car.year} • {car.mileage?.toLocaleString() || '0'} km</p>
           </div>
 
           <div className="specs-grid">
@@ -125,8 +125,8 @@ const CarDetail = () => {
               <span className="spec-value">{car.year}</span>
             </div>
             <div className="spec-item">
-              <span className="spec-label">Mileage</span>
-              <span className="spec-value">{car.mileage?.toLocaleString() || '0'} mi</span>
+              <span className="spec-label">Kilometers</span>
+              <span className="spec-value">{car.mileage?.toLocaleString() || '0'} km</span>
             </div>
             <div className="spec-item">
               <span className="spec-label">Condition</span>

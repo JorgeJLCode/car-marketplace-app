@@ -212,7 +212,7 @@ const AdminPanel = () => {
                 <th>Model</th>
                 <th>Year</th>
                 <th>Price</th>
-                <th>Mileage</th>
+                <th>Kilometers</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -224,7 +224,7 @@ const AdminPanel = () => {
                   <td>{car.model}</td>
                   <td>{car.year}</td>
                   <td>${car.price?.toLocaleString() || '0'}</td>
-                  <td>{car.mileage?.toLocaleString() || '0'} mi</td>
+                  <td>{car.mileage?.toLocaleString() || '0'} km</td>
                   <td className="actions-cell">
                     {/* UX: Edit navigates to a dedicated form page for better usability */}
                     <Link to={`/admin/cars/edit/${car.id}`} className="action-btn edit-btn" title="Edit">

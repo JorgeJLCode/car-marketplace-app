@@ -230,7 +230,7 @@ const AdminCarForm = () => {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="mileage">Mileage</label>
+            <label htmlFor="mileage">Kilometers</label>
               <input
                 type="number"
                 id="mileage"

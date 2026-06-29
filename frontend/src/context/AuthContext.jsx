@@ -29,8 +29,12 @@ export const AuthProvider = ({ children }) => {
       const decoded = parseJwt(token);
       if (decoded) {
         const role = decoded.role || decoded.roles || (decoded.authorities ? decoded.authorities[0] : null) || 'USER';
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setUser({ email: decoded.sub || decoded.email, role: role, authenticated: true });
+        setUser({
+          name: decoded.name,
+          email: decoded.sub || decoded.email,
+          role: Array.isArray(role) ? role[0] : role,
+          authenticated: true
+        });
       } else {
         setUser({ authenticated: true, role: 'USER' });
       }

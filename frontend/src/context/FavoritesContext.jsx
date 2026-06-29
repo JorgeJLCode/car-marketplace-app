@@ -32,7 +32,6 @@ export const FavoritesProvider = ({ children }) => {
   }, [token]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchFavorites();
   }, [fetchFavorites]);
 
@@ -63,7 +62,7 @@ export const FavoritesProvider = ({ children }) => {
 
     try {
       const method = alreadyFavorite ? 'DELETE' : 'POST';
-        const response = await fetch(`${API_URL}/api/favorites?carId=${car.id}`, {
+      const response = await fetch(`${API_URL}/api/favorites/${car.id}`, {
         method,
         headers: { 'Authorization': `Bearer ${token}` }
       });
