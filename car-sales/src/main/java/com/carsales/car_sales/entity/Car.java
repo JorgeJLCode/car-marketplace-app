@@ -41,6 +41,8 @@ public class Car {
     @Min(value = 0, message = "El kilometraje no puede ser negativo")
     private Integer mileage;
 
+    private String imageUrl;
+
     @Builder.Default
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites = new ArrayList<>();

@@ -1,3 +1,5 @@
+import { API_URL } from '../config';
+
 const CAR_IMAGES = {
   'toyota-corolla-2022': '/cars/toyota-corolla-2022.png',
   'honda-civic-2021': '/cars/honda-civic-2021.png',
@@ -17,7 +19,13 @@ const toSlug = (value) =>
 
 export const getCarImageUrl = (car) => {
   const explicitImage = car?.imageUrl || car?.image;
-  if (explicitImage) return explicitImage;
+  if (explicitImage) {
+    if (API_URL && explicitImage.startsWith('/uploads/')) {
+      return `${API_URL}${explicitImage}`;
+    }
+
+    return explicitImage;
+  }
 
   const key = `${toSlug(car?.brand)}-${toSlug(car?.model)}-${car?.year || ''}`;
   return CAR_IMAGES[key] || '/default_car.png';

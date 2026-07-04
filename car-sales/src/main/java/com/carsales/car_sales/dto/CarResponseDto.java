@@ -18,4 +18,5 @@ public class CarResponseDto {
     private Integer year;
     private BigDecimal price;
     private Integer mileage;
+    private String imageUrl;
 }

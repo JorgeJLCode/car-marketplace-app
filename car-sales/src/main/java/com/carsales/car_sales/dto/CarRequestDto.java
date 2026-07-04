@@ -28,4 +28,6 @@ public class CarRequestDto {
     @NotNull(message = "El kilometraje es obligatorio")
     @Min(value = 0, message = "El kilometraje no puede ser negativo")
     private Integer mileage;
+
+    private String imageUrl;
 }

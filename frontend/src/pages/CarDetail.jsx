@@ -12,10 +12,16 @@ const CarDetail = () => {
   const location = useLocation();
   const { user } = useAuth();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const fallbackImage = "/default_car.png";
   
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const handleImageError = (e) => {
+    if (e.currentTarget.src.endsWith(fallbackImage)) return;
+    e.currentTarget.src = fallbackImage;
+  };
 
   useEffect(() => {
     const fetchCarDetail = async () => {
@@ -88,7 +94,12 @@ const CarDetail = () => {
       <div className="detail-content">
         <div className="detail-image-section">
           <div className="main-image-container">
-            <img src={getCarImageUrl(car)} alt={`${car.brand} ${car.model}`} className="detail-main-image" />
+            <img
+              src={getCarImageUrl(car)}
+              alt={`${car.brand} ${car.model}`}
+              className="detail-main-image"
+              onError={handleImageError}
+            />
             <div className="detail-price-badge">${car.price?.toLocaleString() || '0'}</div>
             
             <button 

@@ -34,6 +34,7 @@ public class CarServiceTest {
         request.setYear(2023);
         request.setPrice(new BigDecimal("79999"));
         request.setMileage(100);
+        request.setImageUrl("https://example.com/tesla-model-s.jpg");
 
         Car savedCar = Car.builder()
                 .id(1L)
@@ -42,6 +43,7 @@ public class CarServiceTest {
                 .year(2023)
                 .price(new BigDecimal("79999"))
                 .mileage(100)
+                .imageUrl("https://example.com/tesla-model-s.jpg")
                 .build();
 
         when(carRepository.save(any(Car.class))).thenReturn(savedCar);
@@ -54,6 +56,7 @@ public class CarServiceTest {
         assertEquals(1L, response.getId());
         assertEquals("Tesla", response.getBrand());
         assertEquals(new BigDecimal("79999"), response.getPrice());
+        assertEquals("https://example.com/tesla-model-s.jpg", response.getImageUrl());
         verify(carRepository).save(any(Car.class));
     }
 }

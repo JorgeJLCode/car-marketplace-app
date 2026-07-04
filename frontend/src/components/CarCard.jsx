@@ -9,6 +9,12 @@ const CarCard = ({ car }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
   const location = useLocation();
+  const fallbackImage = "/default_car.png";
+
+  const handleImageError = (e) => {
+    if (e.currentTarget.src.endsWith(fallbackImage)) return;
+    e.currentTarget.src = fallbackImage;
+  };
 
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
@@ -30,7 +36,12 @@ const CarCard = ({ car }) => {
   return (
     <div className="car-card">
       <div className="car-card-image-container">
-        <img src={getCarImageUrl(car)} alt={`${car.brand} ${car.model}`} className="car-card-image" />
+        <img
+          src={getCarImageUrl(car)}
+          alt={`${car.brand} ${car.model}`}
+          className="car-card-image"
+          onError={handleImageError}
+        />
         <div className="car-card-price">${car.price?.toLocaleString() || '0'}</div>
         
         <button 

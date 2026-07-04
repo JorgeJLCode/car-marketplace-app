@@ -2,6 +2,8 @@
 
 # Local tool/cache directories
 car-sales/.m2/
+car-sales/uploads/
+car-sales/*.log
 frontend/node_modules/
 frontend/dist/
 

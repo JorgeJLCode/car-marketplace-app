@@ -52,11 +52,11 @@ public class DataSeeder implements CommandLineRunner {
             log.info("Creando coches iniciales de prueba...");
             
             List<Car> cars = List.of(
-                    Car.builder().brand("Toyota").model("Corolla").year(2022).price(new BigDecimal("22000")).mileage(15000).build(),
-                    Car.builder().brand("Honda").model("Civic").year(2021).price(new BigDecimal("21500")).mileage(20000).build(),
-                    Car.builder().brand("Ford").model("Mustang").year(2023).price(new BigDecimal("35000")).mileage(5000).build(),
-                    Car.builder().brand("Chevrolet").model("Camaro").year(2020).price(new BigDecimal("30000")).mileage(25000).build(),
-                    Car.builder().brand("BMW").model("Serie 3").year(2022).price(new BigDecimal("45000")).mileage(10000).build()
+                    Car.builder().brand("Toyota").model("Corolla").year(2022).price(new BigDecimal("22000")).mileage(15000).imageUrl("/cars/toyota-corolla-2022.png").build(),
+                    Car.builder().brand("Honda").model("Civic").year(2021).price(new BigDecimal("21500")).mileage(20000).imageUrl("/cars/honda-civic-2021.png").build(),
+                    Car.builder().brand("Ford").model("Mustang").year(2023).price(new BigDecimal("35000")).mileage(5000).imageUrl("/cars/ford-mustang-2023.png").build(),
+                    Car.builder().brand("Chevrolet").model("Camaro").year(2020).price(new BigDecimal("30000")).mileage(25000).imageUrl("/cars/chevrolet-camaro-2020.png").build(),
+                    Car.builder().brand("BMW").model("Serie 3").year(2022).price(new BigDecimal("45000")).mileage(10000).imageUrl("/cars/bmw-serie-3-2022.png").build()
             );
             
             carRepository.saveAll(cars);

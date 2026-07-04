@@ -46,6 +46,7 @@ public class CarService {
                 .year(request.getYear())
                 .price(request.getPrice())
                 .mileage(request.getMileage())
+                .imageUrl(request.getImageUrl())
                 .build();
         
         Car savedCar = carRepository.save(car);
@@ -69,6 +70,7 @@ public class CarService {
         car.setYear(request.getYear());
         car.setPrice(request.getPrice());
         car.setMileage(request.getMileage());
+        car.setImageUrl(request.getImageUrl());
 
         Car updatedCar = carRepository.save(car);
         log.info("Admin actualizó exitosamente el vehículo ID [{}]", id);
@@ -95,6 +97,7 @@ public class CarService {
                 .year(car.getYear())
                 .price(car.getPrice())
                 .mileage(car.getMileage())
+                .imageUrl(car.getImageUrl())
                 .build();
     }
 }

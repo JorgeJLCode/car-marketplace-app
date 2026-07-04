@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../config';
+import { getCarImageUrl } from '../utils/carImages';
 import './AdminCarForm.css';
 
 /**
@@ -28,9 +29,12 @@ const AdminCarForm = () => {
     model: '',
     year: '',
     price: '',
-    mileage: ''
+    mileage: '',
+    imageUrl: ''
   });
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imageUploadMessage, setImageUploadMessage] = useState('');
   const [fetching, setFetching] = useState(isEditing); // solo carga datos si estamos editando
   const [error, setError] = useState('');
 
@@ -55,7 +59,8 @@ const AdminCarForm = () => {
           model: data.model || '',
           year: data.year || '',
           price: data.price || '',
-          mileage: data.mileage || ''
+          mileage: data.mileage || '',
+          imageUrl: data.imageUrl || ''
         });
       } catch (err) {
         setError(err.message);
@@ -70,6 +75,45 @@ const AdminCarForm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === 'imageUrl') {
+      setImageUploadMessage('');
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setError('');
+    setImageUploadMessage('');
+    setUploadingImage(true);
+
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+
+    try {
+      const response = await fetch(`${API_URL}/api/uploads/cars`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: uploadData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || 'Failed to upload image');
+      }
+
+      const data = await response.json();
+      setFormData(prev => ({ ...prev, imageUrl: data.imageUrl || '' }));
+      setImageUploadMessage('Image uploaded');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploadingImage(false);
+      e.target.value = '';
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -111,7 +155,8 @@ const AdminCarForm = () => {
           model: formData.model,
           year: parseInt(formData.year),
           price: parseFloat(formData.price),
-          mileage: parseInt(formData.mileage)
+          mileage: parseInt(formData.mileage),
+          imageUrl: formData.imageUrl.trim()
         })
       });
 
@@ -162,6 +207,10 @@ const AdminCarForm = () => {
       </div>
     );
   }
+
+  const imagePreviewUrl = formData.imageUrl
+    ? getCarImageUrl({ imageUrl: formData.imageUrl })
+    : '';
 
   return (
     <div className="car-form-container">
@@ -258,6 +307,42 @@ const AdminCarForm = () => {
               placeholder="e.g. 29999.99"
             />
           </div>
+
+          <div className="form-group">
+            <label htmlFor="imageUrl">Image URL</label>
+            <input
+              type="text"
+              id="imageUrl"
+              name="imageUrl"
+              value={formData.imageUrl}
+              onChange={handleChange}
+              placeholder="https://example.com/car.jpg or /uploads/cars/image.png"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="imageUpload">Upload Image</label>
+            <div className="upload-control">
+              <input
+                type="file"
+                id="imageUpload"
+                accept="image/png,image/jpeg,image/gif,image/webp"
+                onChange={handleImageUpload}
+                disabled={uploadingImage || loading}
+              />
+              {(uploadingImage || imageUploadMessage) && (
+                <span className="upload-status">
+                  {uploadingImage ? 'Uploading...' : imageUploadMessage}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {imagePreviewUrl && (
+            <div className="image-preview">
+              <img src={imagePreviewUrl} alt="Vehicle preview" />
+            </div>
+          )}
         </div>
 
         {/* UX: Two clearly distinct actions — cancel (secondary) and save (primary) */}
@@ -270,7 +355,7 @@ const AdminCarForm = () => {
           >
             Cancel
           </button>
-          <button type="submit" className="primary-btn" disabled={loading}>
+          <button type="submit" className="primary-btn" disabled={loading || uploadingImage}>
             {loading
               ? (isEditing ? 'Saving...' : 'Creating...')
               : (isEditing ? 'Save Changes' : 'Create Vehicle')}

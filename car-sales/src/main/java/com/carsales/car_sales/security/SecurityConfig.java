@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints públicos
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/uploads/cars/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/cars/**").permitAll()
 
                         // Swagger UI (acceso libre en desarrollo)
@@ -37,6 +38,7 @@ public class SecurityConfig {
                         
                         // Endpoints protegidos para Administradores
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/cars/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/uploads/cars").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/cars/**").hasRole("ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/cars/**").hasRole("ADMIN")
                         
